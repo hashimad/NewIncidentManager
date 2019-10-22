@@ -1,0 +1,102 @@
+﻿@using CSLog.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Log in";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+
+
+
+<div class="mcontainer" id="container">
+    <div class="mform-container sign-in-container">
+        <form action="/Account/Login" method="post">
+            @Html.AntiForgeryToken()
+            @Html.Raw(ViewBag.Msg)
+
+            @if (User.Identity.IsAuthenticated)
+            {
+
+                <div class="alert alert-danger p-0" role="alert">
+                    <span>You don't have access to the page you are trying to access.</span>
+                </div>
+            }
+            else
+            {
+                <h1>Sign in</h1>
+            }
+
+
+            <div class="social-container">
+                <a href="#" class="social"><i class="fa fa-location-arrow"></i></a>
+            </div>
+            <span></span>
+            <input type="email" name="Email" placeholder="Email" />
+            <input type="password" name="Password" placeholder="Password" />
+            <a style="color: #04420c" href="#">Forgot your password?</a>
+            <input type="hidden" name="RememberMe" value="false" />
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-right">
+                <h1>Welcome Back!</h1>
+                <p>To add or provide solution to a complaint, please login</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*<h2>@ViewBag.Title.</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <section id="loginForm">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <h4>Use a local account to log in.</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <div class="checkbox">
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Log in" class="btn btn-default" />
+                        </div>
+                    </div>
+                    <p>
+                        @Html.ActionLink("Register as a new user", "Register")
+                    </p>
+                }
+            </section>
+        </div>
+        <div class="col-md-4">
+
+        </div>
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@

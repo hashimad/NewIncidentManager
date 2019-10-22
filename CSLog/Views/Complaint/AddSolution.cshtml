@@ -1,0 +1,172 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Domain.Entities.ComplaintActivity
+@{ 
+    List<SolutionStatus> ss = ViewBag.SolutionStatus;
+    //List<SolutionType> st = ViewBag.SolutionType;
+    vComplaint complaint = ViewBag.Complaint;
+}
+
+<div class="modal-dialog" role="document">
+    <div class="busy"> <i class="fa fa-spinner fa-spin fa-3x"></i></div>
+    <form class="modal-content" id="frmAddSolutions" action="/Complaint/AddSolution" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+            <h5 class="modal-title">Resolve complaint (<b>@complaint.Details</b>)</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="dvError"></div>
+            <div class="form-horizontal">
+
+                <div class="row">
+                    @*<div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-12">Mobile Number</label>
+                            <div class="col-md-12">
+                                <div class="form-control">@complaint.MobileNo</div>
+                            </div>
+                        </div>
+                    </div>*@
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-12">Complaint Type</label>
+                            <div class="col-md-12">
+                                <div class="form-control">@complaint.ComplaintType</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-12">Complaint Details</label>
+                    <div class="col-md-12">
+                        <textarea class="form-control disabled" disabled>@complaint.Details</textarea>
+                    </div>
+                </div>
+                <input type="hidden" name="ComplaintId" value="@Model.ComplaintId" />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+               
+                @*<div class="form-group">
+                    @Html.LabelFor(model => model.SolutionTypeId, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+                        <select name="SolutionTypeId" class="form-control">
+                            <option value="">--Please select--</option>
+                            @foreach (var item in st)
+                            {
+                                if (item.Status > 0)
+                                {
+                                    <option value="@item.SolutionTypeId">@item.Name</option>
+                                }
+                                
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.SolutionType, "", new { @class = "text-danger" })
+                    </div>
+                </div>*@
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SolutionDetails, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+                        <textarea class="form-control" name="SolutionDetails"></textarea>
+                        @Html.ValidationMessageFor(model => model.SolutionDetails, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @Html.LabelFor(model => model.SolutionStatusId, htmlAttributes: new { @class = "control-label col-md-12" })
+                <div class="form-group pl-3">
+                    @foreach (var item in ss)
+                    {
+                        if (item.Status > 0)
+                        {
+                            if (item.SolutionStatusId != complaint.SolutionStatusId)
+                            {
+                                if (item.Name.ToUpper() != "PENDING")
+                                {
+                                    if (item.Name.ToUpper() != "SUSPENDED")
+                                    {
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="radio" name="SolutionStatusId" value="@item.SolutionStatusId"> @item.Name
+                                            </label>
+                                        </div>
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary postr">Add</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#frmAddSolutios').parsley().on('field:validated', function() {
+            var ok = $('.parsley-error').length === 0;
+            $('.bs-callout-info').toggleClass('hidden', !ok);
+            $('.bs-callout-danger').toggleClass('hidden', ok);
+        }).on('form:submit', function (e) {
+            
+            ClearInlineError("dvError");
+            $(".busy").show();
+            var frm = $("frmAddSolutios");
+            var params = frm.serializeArray();
+
+            //alert(params);
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddSolution", "Complaint")',
+                data: params,
+                success: function (data) {
+                    if (!data.IsAuthenticated) {
+                        window.location.href = "/Login";
+                        return;
+                    }
+                    if (!data.IsSuccessful) {
+                        InlineErrorMessage(data.Error ? data.Error : "Unknow error occured. Please try again later!", "dvError");
+
+                    } else {
+                        $('#dvModal').modal('hide');
+                        swal({
+                            title: "",
+                            text: "Added successfully",
+                            icon: "success",
+                            button: "Done",
+                            dangerMode: false,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                window.location.reload();
+                            } else {
+
+                            }
+                        });
+
+                    }
+                },
+                complete: function () {
+                    $(".busy").hide();
+                }
+            });
+            return false;
+        });
+
+    });
+
+
+</script>
+
+
+
+
+
+

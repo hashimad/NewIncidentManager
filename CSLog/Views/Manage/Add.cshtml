@@ -1,0 +1,117 @@
+﻿@model CSLog.Models.RegisterViewModel
+
+
+<div class="modal-dialog" role="document">
+    <div class="busy"> <i class="fa fa-spinner fa-spin fa-3x"></i></div>
+    <form class="modal-content" id="frmAdd" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+            <h5 class="modal-title">Add New User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="dvError"></div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <label class="control-label col-md-12">Display Name</label>
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="DisplayName" value="@Model.DisplayName" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12">Email</label>
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="Email" value="@Model.Email" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-12">Password</label>
+                    <div class="col-md-12">
+                        <input type="password" class="form-control" name="Password" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-group">
+                        <label class="control-label col-md-12">Confirm Password</label>
+                        <div class="col-md-12">
+                            <input type="password" class="form-control" name="ConfirmPassword" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#frmAdd').parsley().on('field:validated', function() {
+            var ok = $('.parsley-error').length === 0;
+            $('.bs-callout-info').toggleClass('hidden', !ok);
+            $('.bs-callout-danger').toggleClass('hidden', ok);
+        }).on('form:submit', function () {
+            ClearInlineError("dvError");
+            $(".busy").show();
+
+            var frm = $("#frmAdd");
+            var params = frm.serializeArray();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Add", "Manage")',
+                data: params,
+                success: function (data) {
+                    if (!data.IsAuthenticated) {
+                        window.location.href = "/Login";
+                        return;
+                    }
+                    if (!data.IsSuccessful) {
+                        InlineErrorMessage(data.Error ? data.Error : "Unknow error occured. Please try again later!", "dvError");
+
+                    } else {
+                        $('#dvModal').modal('hide');
+                        swal({
+                            title: "",
+                            text: "Added successfully",
+                            icon: "success",
+                            button: "Done",
+                            dangerMode: false,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                window.location.reload();
+                            } else {
+
+                            }
+                        });
+                    }
+                },
+                complete: function () {
+                    $(".busy").hide();
+                }
+            });
+            return false;
+        });
+
+    });
+
+
+</script>
+
+
+
+
+
+
+
+

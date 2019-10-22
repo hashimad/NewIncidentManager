@@ -1,0 +1,130 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Models.NewComplaint
+@{
+    List<ComplaintType> ct = ViewBag.ComplaintType;
+    List<SolutionStatus> ss = ViewBag.SolutionStatus;
+
+    List<vComplaint> complaints = ViewBag.Complaints;
+    ViewBag.Title = "New Complaint";
+    string msg = ViewBag.Msg;
+    if (!string.IsNullOrEmpty(msg))
+    {
+        if (msg.ToUpper().Contains("SUCCESS"))
+        {
+            msg = "yes";
+        }
+    }
+}
+
+
+<form class="modal-content" id="frmAddComplaint" method="post" action="/Complaint/NewComplaint">
+    @Html.AntiForgeryToken()
+    <div class="modal-header">
+        
+        <div class="col-md-6">
+            <h5 class="modal-title">New Complaint</h5>
+        </div>
+        <div class="col-md-6">
+            <a class="btn btn-success btn-sm pull-right" href="@Url.Action("Index", "Complaint")"> View Complaints</a>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div id="dvError"></div>
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.Raw(ViewBag.Msg)
+            <div class="row nc-con">
+                <div class="col-md-5">
+                    <h5>Complaint</h5>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                                    <input type="text" name="NoTitle" disabled class="form-control" value="@DateTime.Now.ToString("dd_mm_yyyy_hh:mm:ss_tt")" />
+                                    <input type="hidden" name="Title" class="form-control" value="@DateTime.Now.ToString("dd_mm_yyyy_hh:mm:ss_tt")" />
+                                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @*<div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                                    @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control digits phon", @id = "mMobileNo", @maxlength = "11" } })
+                                    @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger phoneValidation" })
+                                </div>
+                            </div>*@
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ComplaintTypeId, htmlAttributes: new { @class = "control-label col-md-12 d-inline" }) <span class="text-danger">*</span>
+                        <div class="col-md-12">
+                            <input type="hidden" name="Code" value="@Model.Code" id="complaintCode" />
+                            <select name="ComplaintTypeId" id="complaintType" class="form-control">
+                                @if (Model.ComplaintTypeId > 0)
+                                {
+                                    <option value="@Model.ComplaintTypeId">@ct.Where(c => c.ComplaintTypeId == Model.ComplaintTypeId).Select(a => a.Name).FirstOrDefault()</option>
+                                }
+                                else
+                                {
+                                    <option value="">--Please select--</option>
+                                }
+                                @foreach (var item in ct)
+                                {
+                                    if (item.Status > 0)
+                                    {
+                                        <option value="@item.ComplaintTypeId">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.ComplaintTypeId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-12 d-inline" })<span class="text-danger">*</span>
+                        <div class="col-md-12">
+                            <textarea class="form-control" name="Details">@Model.Details</textarea>
+                            @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+            <div class="form-control">
+                <button type="submit" class="btn-primary btn-lg">Add Complaint</button>
+            </div>
+        </div>
+    </div>
+    
+</form>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        if ('@msg' === "yes") {
+            $("#mMobileNo").val('');
+            $("#mLocation").val('');
+        }
+        $(document).on("change", "#complaintType", function () {
+            var ccId = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "/Complaint/GetCode",
+                data: JSON.stringify({ ctID: ccId }),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#complaintCode").val(data);
+                }
+            });
+        });
+
+    });
+
+
+</script>
+

@@ -1,0 +1,94 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Domain.Entities.vComplaint
+
+@*@{ 
+    List<vComplaintActivity> complaintActivities = ViewBag.ComplaintActivity;
+}*@
+
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Complaint Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <dl class="dl-horizontal">
+                @*<dt>
+                    @Html.DisplayNameFor(model => model.ComplaintOwnerName)
+                </dt>
+
+                <dd>
+                    @(string.IsNullOrEmpty(Model.ComplaintOwnerName) ? "No name" : Model.ComplaintOwnerName)
+                </dd>*@
+
+                @*<dt>
+                    @Html.DisplayNameFor(model => model.MobileNo)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.MobileNo)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.ComplaintOwnerEmail)
+                </dt>
+
+                <dd>
+                    @(string.IsNullOrEmpty(Model.ComplaintOwnerEmail) ? "No email" : Model.ComplaintOwnerEmail)
+                </dd>*@
+                <dt>
+                    @Html.DisplayNameFor(model => model.Details)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Details)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.SolutionStatus)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.SolutionStatus)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.RegisteredBy)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.DisplayName)
+                </dd>
+
+            </dl>
+            @*<div class="container-fluid">
+                <div id="accordianId" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        @foreach (var item in complaintActivities)
+                        {
+                            <div class="card-header" role="tab" id="headerId_@item.ComplaintActivityId">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" class="d-block text-decoration-none" data-parent="#accordianId" href="#section_@item.ComplaintActivityId" aria-expanded="true" aria-controls="section_@item.ComplaintActivityId">
+                                        @item.SolutionType
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="section_@item.ComplaintActivityId" class="collapse in" role="tabpanel" aria-labelledby="headerId_@item.ComplaintActivityId">
+                                <div class="card-body">
+                                    <div>@item.SolutionDetails</div>
+                                    <div class="card-footer">@item.Date</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>*@
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>

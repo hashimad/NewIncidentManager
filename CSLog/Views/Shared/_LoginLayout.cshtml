@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    @Styles.Render("~/Content/login.less")
+    @*<link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">*@
+<title>@ViewBag.Title - Incident Management</title>
+</head>
+<body>
+
+    @RenderBody()
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script>
+                //const signUpBtn = document.getElementById('signUp');
+                //const signInBtn = document.getElementById('signIn');
+                //const container = document.getElementById('container');
+
+                //signUpBtn.addEventListener('click', () => {
+                //    container.classList.add('right-panel-active');
+                //});
+                //signInBtn.addEventListener('click', () => {
+                //    container.classList.remove('right-panel-active');
+                //});
+
+    </script>
+</body>
+</html>

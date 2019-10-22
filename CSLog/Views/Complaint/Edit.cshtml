@@ -1,0 +1,97 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Domain.Entities.vComplaint
+@{
+    List<ComplaintType> ct = ViewBag.ComplaintType;
+}
+
+
+<div class="modal-dialog" role="document">
+    <div class="busy"> <i class="fa fa-spinner fa-spin fa-3x"></i></div>
+    <form class="modal-content" id="frmUpdateComplaint" action="/Complaint/Edit" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+            <h5 class="modal-title">Update Complaint</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="dvError"></div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.ComplaintId)
+                @Html.HiddenFor(model => model.ComplaintOwnerName)
+                @Html.HiddenFor(model => model.ComplaintOwnerEmail)
+                @Html.HiddenFor(model => model.SolutionStatusId)
+                @Html.HiddenFor(model => model.RegisteredBy)
+                @Html.HiddenFor(model => model.StatusId)
+                @Html.HiddenFor(model => model.Title)
+                @Html.HiddenFor(model => model.Location)
+                @Html.HiddenFor(model => model.Date)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ComplaintTypeId, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+
+                        <input type="hidden" name="Code" value="@Model.Code" id="complaintCode" />
+                        <select name="ComplaintTypeId" id="complaintType" class="form-control">
+                            <option value="@Model.ComplaintTypeId">@Model.ComplaintType</option>
+                            @foreach (var item in ct)
+                            {
+                                if (item.Status > 0)
+                                {
+                                    <option value="@item.ComplaintTypeId">@item.Name</option>
+                                }
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.ComplaintTypeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+                        <textarea class="form-control" name="Details">@Model.Details</textarea>
+                        @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+                        @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary postr">Update</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(document).on("change", "#complaintType", function () {
+            var ccId = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "/Complaint/GetCode",
+                data: JSON.stringify({ ctID: ccId }),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#complaintCode").val(data);
+                }
+
+            });
+        });
+
+    });
+
+
+</script>
+
+

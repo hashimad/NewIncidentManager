@@ -1,0 +1,452 @@
+﻿@using CSLog.Domain.Entities
+@model IEnumerable<CSLog.Domain.Entities.vComplaint>
+
+@{
+    ViewBag.Title = "Complaints";
+    int counter = 0;
+    DateTime date = ViewBag.Date;
+    List<ComplaintType> ct = ViewBag.ComplaintType;
+    int currentType = ViewBag.currentType;
+
+    List<ComplaintStatus> cs = ViewBag.ComplaintStatus;
+    int currentStatus = ViewBag.currentStatus;
+
+    List<SolutionStatus> ss = ViewBag.SolutionStatus;
+    int currentSolutionStatus = ViewBag.currentSolutionStatus;
+
+    List<AspNetUser> au = ViewBag.Users;
+    int currentAgent = ViewBag.currentComplaintUser;
+
+    int currentUserId=0;
+    if (Session["UserId"] != null)
+    {
+        currentUserId = (int)Session["UserId"];
+    }
+  
+  
+}
+
+
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <h4>Complaint Management</h4>
+    </div>
+    @*<div class="col-md-6">
+        <a class="btn btn-success btn-sm pull-right" href="@Url.Action("AddComplaint", "Complaint")" data-modal=""><i class="fa fa-plus"></i> Add Complaint</a>
+    </div>*@
+</div>
+
+<div>
+    <section class="search-se">
+        <div class="container">
+            <form method="post" action="/SolutionProvided/Index" novalidate="novalidate">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-12 p-1">
+                                <input type="text" class="form-control search-sl date" name="date" value="@date.ToString("dd/MM/yyyy")" />
+                            </div>
+                            <div class="col-md-4 col-sm-12 p-1">
+                                <select class="form-control search-sl" name="complaintType">
+                                    @if (currentType == 0)
+                                    {
+                                        <option value="0">select complaint type</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@currentType">@ct.Where(c => c.ComplaintTypeId == currentType).Select(a => a.Name).FirstOrDefault()</option>
+                                    }
+
+                                    @foreach (var item in ct)
+                                    {
+                                        if (item.ComplaintTypeId != currentType)
+                                        {
+                                            <option value="@item.ComplaintTypeId">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12 p-1">
+                                <select class="form-control search-sl" name="complaintStatus">
+                                    @if (currentStatus == 0)
+                                    {
+                                        <option value="0">select complaint status</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@currentStatus">@cs.Where(c => c.ComplaintStatusId == currentStatus).Select(a => a.Name).FirstOrDefault()</option>
+                                    }
+
+                                    @foreach (var item in cs)
+                                    {
+                                        if (item.ComplaintStatusId != currentStatus)
+                                        {
+                                            <option value="@item.ComplaintStatusId">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12 p-1">
+                                <select class="form-control search-sl" name="solnStatus">
+                                    @if (currentSolutionStatus == 0)
+                                    {
+                                        <option value="0">select solution status</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@currentSolutionStatus">@ss.Where(c => c.SolutionStatusId == currentSolutionStatus).Select(a => a.Name).FirstOrDefault()</option>
+                                    }
+
+                                    @foreach (var item in ss)
+                                    {
+                                        if (item.SolutionStatusId != currentStatus)
+                                        {
+                                            <option value="@item.SolutionStatusId">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12 p-1">
+                                @*<input type="text" class="form-control search-sl" name="agent" placeholder="" />*@
+                               
+                                    <select class="form-control search-sl" name="complaintUser">
+                                        @if (currentAgent == 0)
+                                        {
+                                            <option value="0">select Complaint User </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@currentAgent">@au.Where(c => c.UserId == currentAgent).Select(a => a.DisplayName).FirstOrDefault()</option>
+                                        }
+
+
+                                        @foreach (var item in au)
+                                        {
+                                            if (item.UserId != currentAgent)
+                                            {
+                                                <option value="@item.UserId">@item.DisplayName</option>
+                                            }
+                                        }
+
+
+
+                                    </select>
+                                
+
+                            </div>
+
+                            <div class="col-md-3 col-sm-12 p-1">
+                                @*<input type="text" class="form-control search-sl" name="agent" placeholder="" />*@
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <select class="form-control search-sl" name="supportUser">
+                                        @if (currentAgent == 0)
+                                        {
+                                            <option value="0">select support User </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@currentAgent">@au.Where(c => c.UserId == currentAgent).Select(a => a.DisplayName).FirstOrDefault()</option>
+                                        }
+
+
+                                        @foreach (var item in au)
+                                        {
+                                            if (item.UserId != currentAgent)
+                                            {
+                                                <option value="@item.UserId">@item.DisplayName</option>
+                                            }
+                                        }
+
+
+
+                                    </select>
+                                }
+                                else if (User.IsInRole("Support"))
+                                {
+                                    <select class="form-control search-sl" name="supportUser" style="display: none;">
+
+
+                                        <option value="@currentUserId">@au.Where(c => c.UserId == currentUserId).Select(a => a.DisplayName).FirstOrDefault()</option>
+
+
+                                    </select>
+                                }
+
+                            </div>
+
+                            <div class="col-md-3 col-sm-12 text-right p-1">
+                                <div></div>
+                                <button type="submit" class="btn btn-danger">Get Record</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<hr />
+
+@Html.Raw(ViewBag.Msg)
+<table class="table table-bordered table-striped table-hover dataTable mt-3">
+    <thead>
+        <tr>
+            <th>S/No</th>
+            <th>Time Span</th>
+            <th>Title</th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.MobileNo)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.ComplaintType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ComplaintStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ResolvedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SolutionStatus)
+            </th>
+           
+
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            counter++;
+            <tr>
+                <td>@counter</td>
+                <td>@item.Date.ToString("MMM dd, yyyy hh:mm tt")</td>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.MobileNo)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.ComplaintType)
+                </td>
+                <td>
+                    <span class="badge badge-primary">@item.ComplaintStatus</span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SupportUser)
+                </td>
+                <td>
+                    @if (item.SolutionStatus.ToUpper() == "PENDING")
+                    {
+                        <span class="badge badge-danger">@item.SolutionStatus</span>
+                    }
+                    else if (item.SolutionStatus.ToUpper() == "RESOLVED FULLY")
+                    {
+                        <span class="badge badge-success">@item.SolutionStatus</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-warning">@item.SolutionStatus</span>
+                    }
+                </td>
+
+                <td>
+                    <div class="dropdown open pull-right">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                            Action
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="dropdown-item" href="/Complaint/AssignTo/@item.ComplaintId" data-modal="">Assign To Support User</a>
+                            }
+                            <a class="dropdown-item" href="/Complaint/Details/@item.ComplaintId" data-modal="">View Complaint Detail</a>
+                            <a class="dropdown-item" href="/Complaint/ResolutionDetails/@item.ComplaintId" data-modal="">View Resolution Detail</a>
+                            @if (item.ComplaintStatus.ToUpper() != "COMPLETED")
+                            {
+                                <a class="dropdown-item" href="/Complaint/AddSolution/@item.ComplaintId" data-modal="">Add resolution</a>
+                                <a class="dropdown-item suspendItm" href="#" data-Id="@item.ComplaintId"> Suspend</a>
+                            }
+                            else
+                            {
+                                if (item.SolutionStatus.ToUpper() == "RESOLVED FULLY")
+                                {
+                                    <a class="dropdown-item closeItm" href="#" data-Id="@item.ComplaintId"> Close Complaint</a>
+                                }
+                            }
+                         
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<script>
+    function suspendComplaint(id) {
+        if (id === "" || parseInt(id) < 1) {
+            InlineErrorMessage(data.Error ? data.Error : "Invalid Selection!", "dvError");
+            return false;
+        }
+        swal({
+            title: "",
+            text: "Are you sure you want to suspend this complaint?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                confirmSuspend(id);
+            } else {
+            }
+        });
+        return false;
+    }
+
+    function confirmSuspend(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Suspend", "Complaint")',
+            data: JSON.stringify({ Id: id}),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (!data.IsAuthenticated) {
+                    window.location.href = "/Login";
+                    return;
+                }
+                if (!data.IsSuccessful) {
+                    //InlineErrorMessage(data.Error ? data.Error : "Unknow error occured. Please try again later!", "dvError");
+                    swal({
+                        title: "",
+                        text: data.Error ? data.Error : "Unknow error occured. Please try again later!",
+                        icon: "error",
+                        button: "Ok",
+                        dangerMode: false,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+
+                        } else {
+
+                        }
+                    });
+
+                } else {
+                    swal({
+                        title: "",
+                        text: "Complaint suspended successfully",
+                        icon: "success",
+                        button: "Done",
+                        dangerMode: false,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            window.location.reload();
+                        } else {
+
+                        }
+                    });
+                }
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    $(document).on("click", ".suspendItm", function () {
+        var mID = $(this).attr("data-Id");
+        suspendComplaint(mID);
+    });
+
+    function closeComplaint(id) {
+        if (id === "" || parseInt(id) < 1) {
+            InlineErrorMessage(data.Error ? data.Error : "Invalid Selection!", "dvError");
+            return false;
+        }
+        swal({
+            title: "",
+            text: "Are you sure you want to close this complaint?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                confirmClose(id);
+            } else {
+            }
+        });
+        return false;
+    }
+
+    function confirmClose(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Close", "Complaint")',
+            data: JSON.stringify({ Id: id}),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (!data.IsAuthenticated) {
+                    window.location.href = "/Login";
+                    return;
+                }
+                if (!data.IsSuccessful) {
+                    //InlineErrorMessage(data.Error ? data.Error : "Unknow error occured. Please try again later!", "dvError");
+                    swal({
+                        title: "",
+                        text: data.Error ? data.Error : "Unknow error occured. Please try again later!",
+                        icon: "error",
+                        button: "Ok",
+                        dangerMode: false,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+
+                        } else {
+
+                        }
+                    });
+
+                } else {
+                    swal({
+                        title: "",
+                        text: "Complaint closed successfully",
+                        icon: "success",
+                        button: "Done",
+                        dangerMode: false,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            window.location.reload();
+                        } else {
+
+                        }
+                    });
+                }
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    $(document).on("click", ".closeItm", function () {
+        var mID = $(this).attr("data-Id");
+        closeComplaint(mID);
+    });
+
+
+</script>
+

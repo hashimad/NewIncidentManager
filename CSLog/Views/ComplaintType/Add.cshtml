@@ -1,0 +1,106 @@
+﻿@model CSLog.Domain.Entities.ComplaintType
+
+
+<div class="modal-dialog" role="document">
+    <div class="busy"> <i class="fa fa-spinner fa-spin fa-3x"></i></div>
+    <form class="modal-content" id="frmAdd" action="/ComplaintType/Add" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+            <h5 class="modal-title">New Complaint Types</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="dvError"></div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <span class="ml-3">Active</span> <input type="checkbox" checked class="form-check-inline" name="Status" value="1" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary postr">Add</button>
+        </div>
+    </form>
+</div>
+
+
+@*<script>
+    $(document).ready(function () {
+        $('#frmAd').parsley().on('field:validated', function() {
+            var ok = $('.parsley-error').length === 0;
+            $('.bs-callout-info').toggleClass('hidden', !ok);
+            $('.bs-callout-danger').toggleClass('hidden', ok);
+        }).on('form:submit', function () {
+            ClearInlineError("dvError");
+            $(".busy").show();
+
+            var frm = $("#frmdd");
+            var params = frm.serializeArray();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Add", "ComplaintType")',
+                data: params,
+                success: function (data) {
+                    if (!data.IsAuthenticated) {
+                        window.location.href = "/Login";
+                        return;
+                    }
+                    if (!data.IsSuccessful) {
+                        InlineErrorMessage(data.Error ? data.Error : "Unknow error occured. Please try again later!", "dvError");
+
+                    } else {
+                        $('#dvModal').modal('hide');
+                        swal({
+                            title: "",
+                            text: "Added successfully",
+                            icon: "success",
+                            button: "Done",
+                            dangerMode: false,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                window.location.reload();
+                            } else {
+
+                            }
+                        });
+                    }
+                },
+                complete: function () {
+                    $(".busy").hide();
+                }
+            });
+            return false;
+        });
+
+    });
+
+
+</script>*@
+
+
+
+
+
+
+
+

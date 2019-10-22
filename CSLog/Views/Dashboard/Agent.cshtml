@@ -1,0 +1,248 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Models.DashboardViewModel
+@{
+    /**/
+
+    ViewBag.Title = "Agent Dasshboard";
+    string s = ViewBag.sDate;
+    string e = ViewBag.eDate;
+    List<AspNetUser> au = ViewBag.Agents;
+    int currentAgent = ViewBag.currentAgent;
+    int counter = 0;
+    List<vComplaint> dts = ViewBag.dts;
+}
+
+
+
+<div class="row mt-3">
+    <div class="col-md-5">
+        <h4>@ViewBag.currentAgentName</h4>
+    </div>
+    <div class="col-md-7">
+        <section class="search-sec">
+            <div class="container">
+                <form action="/Dashboard/Agent" method="post">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+
+                                <div class="col-md-6 col-sm-12 p-0">
+                                    <input type="hidden" id="sDate" name="sDate" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                    <input type="hidden" id="eDate" name="eDate" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                    <div id="reportrange" class="form-control search-slt" style="cursor: pointer; padding-top: 3px; font-size: 13px;">
+                                        <i class="fa fa-calendar"></i>&nbsp;
+                                        <span></span> <i class="fa fa-caret-down"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12 p-0">
+                                    <select class="form-control" name="agent" style="font-size: 13px;">
+                                        @if (currentAgent == 0)
+                                        {
+                                            <option value="0">select user</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@currentAgent">@au.Where(c => c.UserId == currentAgent).Select(a => a.DisplayName).FirstOrDefault()</option>
+                                        }
+
+                                        @foreach (var item in au)
+                                        {
+                                            if (item.UserId != currentAgent)
+                                            {
+                                                <option value="@item.UserId">@item.DisplayName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-sm-12 p-0">
+                                    <button type="submit" style="font-size: 13px;" class="btn btn-danger wrn-btn">Get Record</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="dashboard-wrapper">
+
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <a href="/Complaint/Report" class="text-decoration-none">
+                            <div class="card-body">
+                                <div class="cd-con">
+                                    <i class="pull-right fa fa-circle-o-notch"></i>
+                                    <b>@Model.TotalComplaint</b>
+                                    <span>Total Complaint</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="/Complaint/Resolved" class="text-decoration-none getr">
+                                <div class="cd-con">
+                                    <i class="pull-right fa fa-check-circle-o"></i>
+                                    <b>@Model.TotalResolved</b>
+                                    <span>Total Resolved</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="#" class="text-decoration-none">
+                                <div class="cd-con">
+                                    <i class="pull-right fa fa-envelope-open-o"></i>
+                                    <b>@Model.TotalUnresolved</b>
+                                    <span>Total Unresolved</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <a href="#" class="text-decoration-none">
+                            <div class="card-body">
+                                <div class="cd-con">
+                                    <i class="pull-right fa fa-circle-o-notch"></i>
+                                    <b>@Model.TotalClosed</b>
+                                    <span>Total Closed</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-12">
+        @ViewBag.Chart
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped table-hover dataTable mt-5">
+    <thead>
+        <tr>
+            <th>S/No</th>
+            <th>Time Span</th>
+            <th>Title</th>
+            @*<th>
+                Mobile Number
+            </th>*@
+            <th>
+               Complaint Type
+            </th>
+            <th>
+                Complaint Status
+            </th>
+            <th>
+                Solution Status
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in dts)
+        {
+            counter++;
+            <tr>
+                <td>@counter</td>
+                <td>@item.Date.ToString("MMM dd, yyyy hh:mm tt")</td>
+                <td>@item.Title</td>
+                @*<td>
+                    @item.MobileNo
+                </td>*@
+                <td>
+                    @item.ComplaintType
+                </td>
+                <td>
+                    <span class="badge badge-primary">@item.ComplaintStatus</span>
+                </td>
+                <td>
+                    @if (item.SolutionStatus.ToUpper() == "PENDING")
+                    {
+                        <span class="badge badge-danger">@item.SolutionStatus</span>
+                    }
+                    else if (item.SolutionStatus.ToUpper() == "RESOLVED FULLY")
+                    {
+                        <span class="badge badge-success">@item.SolutionStatus</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-warning">@item.SolutionStatus</span>
+                    }
+                </td>
+
+                <td>
+                    <div class="dropdown open pull-right">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                            Action
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="triggerId">
+                            <a class="dropdown-item" href="/Complaint/Details/@item.ComplaintId" data-modal="">View Complaint Detail</a>
+                            <a class="dropdown-item" href="/Complaint/ResolutionDetails/@item.ComplaintId" data-modal="">View Resolution Detail</a>
+
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+
+@section scripts{
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var start = moment('@s', "DD/MM/YYYY"); //moment().subtract(7, 'days');
+            var end = moment('@e', "DD/MM/YYYY"); //moment();
+            function cb(start, end) {
+                //alert(start);
+                $('#sDate').val(start.format('DD/MM/YYYY'));
+                $('#eDate').val(end.format('DD/MM/YYYY'));
+                $('#reportrange span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+            }
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                opens: 'left',
+                autoApply: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            }, cb);
+            cb(start, end);
+        });
+    </script>
+}
+

@@ -1,0 +1,129 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Domain.Entities.Complaint
+@{
+    List<ComplaintType> ct = ViewBag.ComplaintType;
+
+}
+
+<div class="modal-dialog" role="document">
+    <div class="busy"> <i class="fa fa-spinner fa-spin fa-3x"></i></div>
+    <form class="modal-content" id="frmAddComplaint" method="post" action="/Complaint/AddComplaint">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+            <h5 class="modal-title">New Complaint</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="dvError"></div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                                @*@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })*@
+                                <input type="text" name="NoTitle" disabled class="form-control" value="@DateTime.Now.ToString("dd_mm_yyyy_hh:mm:ss_tt")" />
+                                <input type="hidden" name="Title" class="form-control" value="@DateTime.Now.ToString("dd_mm_yyyy_hh:mm:ss_tt")" />
+                                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                                @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control digits phon", @maxlength = "11" } })
+                                @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger phoneValidation" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ComplaintTypeId, htmlAttributes: new { @class = "control-label col-md-12 d-inline" }) <span class="text-danger">*</span>
+                    <div class="col-md-12">
+                        <input type="hidden" name="Code" id="complaintCode" />
+                        <select name="ComplaintTypeId" id="complaintType" class="form-control">
+                            <option value="">--Please select--</option>
+                            @foreach (var item in ct)
+                            {
+                                if (item.Status > 0)
+                                {
+                                    <option value="@item.ComplaintTypeId">@item.Name</option>
+                                }
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.ComplaintType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-12 d-inline" })<span class="text-danger">*</span>
+                    <div class="col-md-12">
+                        <textarea class="form-control" name="Details"></textarea>
+                        @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+                        <input type="hidden" name="SolutionStatusId" value="1" />
+                        <input type="hidden" name="StatusId" value="1" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-12 d-inline" })<span class="text-danger">*</span>
+                    <div class="col-md-12">
+                        @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ComplaintOwnerName, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.ComplaintOwnerName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ComplaintOwnerName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ComplaintOwnerEmail, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.ComplaintOwnerEmail, new { htmlAttributes = new { @class = "form-control email" } })
+                                @Html.ValidationMessageFor(model => model.ComplaintOwnerEmail, "", new { @class = "text-danger emailValidation" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary postr">Add</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(document).on("change", "#complaintType", function () {
+            var ccId = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: "/Complaint/GetCode",
+                data: JSON.stringify({ ctID: ccId }),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#complaintCode").val(data);
+                }
+
+            });
+        });
+
+    });
+
+
+</script>
+

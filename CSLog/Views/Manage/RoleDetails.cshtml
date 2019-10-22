@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNet.Identity.EntityFramework
+@model IdentityRole
+@{
+    ViewBag.Title = "Role Details";
+    List<CSLog.Models.ApplicationUser> users = ViewBag.Users;
+}
+
+<div>
+    <h4 class="title">Role Details</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label class="custom-control-label col-md-12">Role Name</label>
+                <div class="col-md-12">
+                    <div class="form-control">@Model.Name</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+
+        </div>
+    </div>
+
+    <div class="card-sm effect p30">
+        <h4 class="title">Users under this role</h4>
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>User Name</th>
+                    <th>Display Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in users)
+                {
+                <tr>
+                    <td>@item.UserId</td>
+                    <td>@item.UserName</td>
+                    <td>@item.DisplayName</td>
+                    <td></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+</div>

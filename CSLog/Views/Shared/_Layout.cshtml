@@ -1,0 +1,164 @@
+﻿@using CSLog.Domain.Repositories
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="titleStore">@ViewBag.Title - Incident Management</title>
+    @Styles.Render("~/Content/custom.less")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+
+    @{ 
+        ASPNetUserRepository usr = new ASPNetUserRepository();
+        var userObj = usr.GetUser(User.Identity.Name);
+        var currentPage = Request.Url.AbsoluteUri.ToUpper();
+    }
+
+</head>
+<body>
+
+    <div id="AjaxLoading">
+        <i class="fa fa-spinner fa-spin fa-4x"></i>
+    </div>
+
+    <div class="nav-wrapper">
+        <div class="container-fluid">
+            <div class="brand pull-left">
+                @*<img src="~/images/LR-CARD1.png" alt="Alternate Text" />*@
+                <b>Incedent Management</b>
+                @*<b><span style="color: #ff6a00;">Customer</span> <span style="color: #f64848;">Service</span> <span style="color: #055b35;">Log</span></b>*@
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="profile-wrapper pull-right">
+                    <ul>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @User.Identity.Name
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/Manage/Changepassword?userId=@userObj.Id">Change Password</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/Account/Logoff">Log Out</a>
+                            </div>
+                        </li>
+                        @*<li>
+                                <a href="#" class="text-decoration-none text-white mr-3 pt-2">@User.Identity.Name</a>
+                                <a class="btn btn-outline-success btn-sm mt-2" href="/Account/Logoff">Logout</a>
+                            </li>*@
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="body-wrapper">
+        <div class="side-bar">
+            <ul>
+                <li class="mItem @(currentPage.Contains("DASHBOARD")?"mItemMenu":"")">
+                    <a href="/Dashboard" class="ger"><i class="fa fa-th-large"></i> Dashboard</a>
+                </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="mItem @(currentPage.Contains("COMPLAINTTYPE")|| currentPage.Contains("SOLUTIONTYPE")||currentPage.Contains("SOLUTIONSTATUS")?"mItemMenu":"")">
+                        <a href="#" class="main-menu" data-item="settings"><i class="fa fa-gear"></i> Settings <i class="fa fa-angle-right pull-right"></i></a>
+
+                        <ul class="inner-menu settings">
+                            <li>
+                                <a href="/ComplaintType/index" class="getr mInnerItem @(currentPage.Contains("COMPLAINTTYPE/INDEX")?"mItemInnerMenu":"")"><i class="fa fa-close"></i> Complaint Types</a>
+                            </li>
+                            @*<li>
+                                <a href="/SolutionType/index" class="getr mInnerItem @(currentPage.Contains("SOLUTIONTYPE/INDEX")?"mItemInnerMenu":"")"><i class="fa fa-check-square-o"></i> Solution Types</a>
+                            </li>*@
+                            <li>
+                                <a href="/SolutionStatus/index" class="getr mInnerItem @(currentPage.Contains("SOLUTIONSTATUS/INDEX")?"mItemInnerMenu":"")"><i class="fa fa-check"></i> Solution Status</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="mItem @(currentPage.Contains("MANAGE")?"mItemMenu":"")">
+                        <a href="#" class="main-menu" data-item="users"><i class="fa fa-gear"></i> Manage Users <i class="fa fa-angle-right pull-right"></i></a>
+
+                        <ul class="inner-menu users">
+                            <li>
+                                <a href="/Manage/Index" class="getr mInnerItem @(currentPage.Contains("MANAGE/INDEX")?"mItemInnerMenu":"")"><i class="fa fa-users"></i> Users</a>
+                            </li>
+                            <li>
+                                <a href="/Manage/roles" class="getr mInnerItem @(currentPage.Contains("MANAGE/ROLES")?"mItemInnerMenu":"")"><i class="fa fa-adn"></i> Roles</a>
+                            </li>
+                        </ul>
+                    </li>
+                    @*<li class="mItem @(currentPage.Contains("MANAGE")?"mItemMenu":"")">
+                <a href="/Manage" class="@(User.IsInRole("Admin")? "getr":"")"><i class="fa fa-user-circle"></i> Manage users</a>
+            </li>*@
+                }
+
+                @*<li class="mItem">
+            <a href="@Url.Action("AddComplaint", "Complaint")" data-modal=""><i class="fa fa-plus"></i> Lodge Complaints</a>
+        </li>*@
+
+                @if (User.IsInRole("Admin") || User.IsInRole("User"))
+                {
+                    <li class="mItem @(currentPage.Contains("COMPLAINT/NEWCOMPLAINT") ? "mItemMenu" : "")">
+                        <a href="/Complaint/NewComplaint" class="getr"><i class="fa fa-plus"></i> Lodge Complaint</a>
+                    </li>
+                }
+                @if (User.IsInRole("Admin") || User.IsInRole("Support"))
+                {
+                    <li class="mItem @(currentPage.Contains("COMPLAINT/Index") ? "mItemMenu" : "")">
+                        <a href="/SolutionProvided/Index" class="getr"><i class="fa fa-plus"></i> Provide Solution</a>
+                    </li>
+                }
+                @*<li>
+            <a href="/Complaint/Report" class="getr"><i class="fa fa-pie-chart"></i> All Complaints</a>
+        </li>*@
+
+                <li class="mItem @(currentPage.Contains("COMPLAINT/RESOLVED")|| currentPage.Contains("COMPLAINT/REPORT")?"mItemMenu":"")">
+                    <a href="#" class="main-menu" data-item="reports"><i class="fa fa-file-o"></i> Reports <i class="fa fa-angle-right pull-right"></i></a>
+
+                    <ul class="inner-menu reports">
+                        <li>
+                            <a href="/Complaint/Resolved" class="getr mInnerItem @(currentPage.Contains("COMPLAINT/RESOLVED")?"mItemInnerMenu":"")" data-item="reports"><i class="fa fa-check-square-o"></i> Resolved</a>
+                        </li>
+                        <li>
+                            <a href="/Complaint/Report" class="getr mInnerItem @(currentPage.Contains("COMPLAINT/REPORT")?"mItemInnerMenu":"")" data-item="reports"><i class="fa fa-close"></i> Unresolved</a>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li>
+                                <a href="/Dashboard/agent" class="getr mInnerItem @(currentPage.Contains("DASHBOARD/AGENT")?"mItemInnerMenu":"")" data-item="reports"><i class="fa fa-circle-o"></i> Agent Summary</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+        <div class="content-wrapper" id="page-container">
+            @RenderBody()
+        </div>
+    </div>
+
+    <div class="modal fade" id="dvModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div id="modalContent"></div>
+    </div>
+
+    @*<script src="~/Scripts/bootstrap.min.js"></script>
+        <script src="~/Scripts/popper.min.js"></script>*@
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/moment.js"></script>
+    <script src="~/Scripts/parsley.js"></script>
+    <script src="~/Scripts/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/daterangepicker.js"></script>
+    <script src="~/Scripts/jquery-confirm.min.js"></script>
+    <script src="~/Scripts/sweetalert.min.js"></script>
+    <script src="~/Scripts/xp-face-tool.js"></script>
+    <script src="~/Scripts/custom.js"></script>
+
+    @*@Scripts.Render("~/bundles/bootstrap")*@
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

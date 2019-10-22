@@ -1,0 +1,107 @@
+﻿@using CSLog.Domain.Entities
+@model CSLog.Domain.Entities.vComplaint
+@{
+    List<ComplaintType> ct = ViewBag.ComplaintType;
+    List<AspNetUser> users = ViewBag.SupportUsers;
+    int currentUser = ViewBag.CurrentUser;
+}
+
+
+<div class="modal-dialog" role="document">
+    <div class="busy"> <i class="fa fa-spinner fa-spin fa-3x"></i></div>
+    <form class="modal-content" id="frmUpdateComplaint" action="/Complaint/AssignTo" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+            <h5 class="modal-title">Assign Support User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="dvError"></div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.ComplaintId)
+                @Html.HiddenFor(model => model.ComplaintOwnerName)
+                @Html.HiddenFor(model => model.ComplaintOwnerEmail)
+                @Html.HiddenFor(model => model.SolutionStatusId)
+                @Html.HiddenFor(model => model.RegisteredBy)
+                @Html.HiddenFor(model => model.StatusId)
+                @Html.HiddenFor(model => model.Title)
+                @Html.HiddenFor(model => model.Location)
+                @Html.HiddenFor(model => model.Date)
+                @Html.HiddenFor(model =>model.ComplaintTypeId)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ComplaintTypeId, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+
+                        <input type="hidden" name="Code" value="@Model.Code" id="complaintCode" />
+                        <label>@Model.ComplaintType</label>
+
+                        @Html.ValidationMessageFor(model => model.ComplaintTypeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-12" })
+                    <div class="col-md-12">
+                        <textarea class="form-control" readonly name="Details">@Model.Details</textarea>
+                        @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-sm-12 p-1">
+                    @*<input type="text" class="form-control search-sl" name="agent" placeholder="" />*@
+                    <select class="form-control" name="ResolvedBy">
+                        @if (currentUser == 0)
+                        {
+                            <option value="0">select user </option>
+                        }
+                        else
+                        {
+                            <option value="@currentUser">@users.Where(c => c.UserId == currentUser).Select(a => a.DisplayName).FirstOrDefault()</option>
+                        }
+
+                        @foreach (var item in users)
+                        {
+                            if (item.UserId != currentUser)
+                            {
+                                <option value="@item.UserId">@item.DisplayName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+      
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary postr">Assign</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    //$(document).ready(function () {
+
+    //    $(document).on("change", "#complaintType", function () {
+    //        var ccId = $(this).val();
+    //        $.ajax({
+    //            type: "POST",
+    //            url: "/Complaint/GetCode",
+    //            data: JSON.stringify({ ctID: ccId }),
+    //            contentType: "application/json; charset=utf-8",
+    //            success: function (data) {
+    //                $("#complaintCode").val(data);
+    //            }
+
+    //        });
+    //    });
+
+    //});
+
+
+</script>
+
+
